@@ -11,22 +11,28 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
     [Space]
     [SerializeField] private bool _allowInvincibilityFrames = true;
     [SerializeField] private float _invincibilityFramesDuration = 1f;
+    [Space]
 
     public UnityEvent OnTakeDamage;
     public UnityEvent OnDeath;
 
+    private Renderer[] _meshRenderers;
     private float _health = 1;
-    private MeshRenderer _meshRenderer;
-
     private float _invincibilityTimer = 0f;
 
     public float Health { get => _health; private set => _health = value; }
     public bool DestroyOnDeath { get => _destroyOnDeath; private set => _destroyOnDeath = value; }
     public bool Invincible { get => _invincible; set => _invincible = value; }
+    public float MaxHealth { get => _maxHealth; private set => _maxHealth = value; }
 
     private void Awake()
     {
-        _meshRenderer = GetComponent<MeshRenderer>();
+        _meshRenderers = GetComponentsInChildren<Renderer>();
+    }
+
+    private void Start()
+    {
+        _health = MaxHealth;
     }
 
     public void TakeDamage(float damage)
@@ -40,19 +46,16 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             OnTakeDamage.Invoke();
             Health -= damage;
 
-            if (_allowInvincibilityFrames)
+            if (Health <= 0)
+            {
+                Health = 0;
+
+                OnDeath.Invoke();
+                if (DestroyOnDeath)
+                    Destroy(gameObject);
+            }
+            else if (_allowInvincibilityFrames)
                 StartCoroutine(IFramesCoroutine());
-        }
-
-        if (Health <= 0)
-        {
-            Health = 0;
-
-            OnDeath.Invoke();
-            if (DestroyOnDeath)
-                Destroy(gameObject);
-            else
-                gameObject.SetActive(false);
         }
     }
 
@@ -67,9 +70,10 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
             // Increment timer
             _invincibilityTimer += Time.deltaTime;
 
-            // Toggle the mesh renderer to achieve flashing effect
-            if (_meshRenderer)
-                _meshRenderer.enabled = !_meshRenderer.enabled;
+            // Toggle the object to achieve flashing effect
+            if (_meshRenderers.Length > 0)
+                foreach (Renderer renderer in _meshRenderers)
+                    renderer.enabled = !renderer.enabled;
 
             // Wait for next frame
             yield return null;
@@ -78,8 +82,9 @@ public class HealthBehaviour : MonoBehaviour, IDamageable
         // Set not invincible
         Invincible = false;
 
-        // Turn mesh renderer on
-        _meshRenderer.enabled = true;
+        // Turn object on
+        foreach (Renderer renderer in _meshRenderers)
+            renderer.enabled = true;
 
         // Reset timer
         _invincibilityTimer = 0f;
