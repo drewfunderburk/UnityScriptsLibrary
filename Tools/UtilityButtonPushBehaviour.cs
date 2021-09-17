@@ -9,8 +9,9 @@ using UnityEditor;
 /// </summary>
 public class UtilityButtonPushBehaviour : MonoBehaviour
 {
-    public bool InvokeInUpdate = false;
-    public KeyCode Key;
+    [SerializeField] private bool InvokeInUpdate = false;
+    [SerializeField] private KeyCode Key;
+
     public UnityEvent ButtonPush;
 
     private void Update()
