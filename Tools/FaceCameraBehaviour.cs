@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class FaceCameraBehaviour : MonoBehaviour
 {
+    [SerializeField] private bool _zeroOutX = false;
     private Camera _camera;
 
-    void Start()
+    void Awake()
     {
         _camera = Camera.main;
     }
 
     void Update()
     {
-        transform.rotation = _camera.transform.rotation;
+        if (_zeroOutX)
+        {
+            Vector3 rotation = _camera.transform.eulerAngles;
+            rotation.x = 0;
+            transform.rotation = Quaternion.Euler(rotation);
+        }
+        else
+            transform.rotation = _camera.transform.rotation;
     }
 }
