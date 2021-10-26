@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class CameraShake : MonoBehaviour
 {
@@ -68,7 +71,7 @@ public class CameraShake : MonoBehaviour
             float translationZ = _maximumTranslationalOffset.z * Mathf.Pow(_trauma, _traumaExponent) * noiseSample.z;
 
             // Apply translation
-            transform.position = new Vector3(translationX, translationY, translationZ); ;
+            transform.localPosition = new Vector3(translationX, translationY, translationZ); ;
         }
 
         // Apply rotational shake
@@ -82,7 +85,7 @@ public class CameraShake : MonoBehaviour
             Quaternion rotationY = Quaternion.AngleAxis(_maximumRotationalOffset.y * Mathf.Pow(_trauma, _traumaExponent) * noiseSample.y, Vector3.up);
             Quaternion rotationZ = Quaternion.AngleAxis(_maximumRotationalOffset.z * Mathf.Pow(_trauma, _traumaExponent) * noiseSample.z, Vector3.forward);
             
-            transform.rotation = rotationX * rotationY * rotationZ;
+            transform.localRotation = rotationX * rotationY * rotationZ;
         }
 
         // Trauma decay
@@ -104,3 +107,20 @@ public class CameraShake : MonoBehaviour
         return new Vector3(noiseSampleX, noiseSampleY, noiseSampleZ);
     }
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(CameraShake))]
+public class CameraShakeEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        string text = "This camera shake script uses a trauma system to give both rotational and translational shake to an object based on Perlin Noise." +
+            "\n\n" +
+            "Place directly on the object you want shaken. Object will be reset to its local origin when no trauma is applied. " +
+            "Child the object to an empty game object and affect it with any other scripts instead.";
+        EditorGUILayout.HelpBox(text, MessageType.Info);
+
+        base.OnInspectorGUI();
+    }
+}
+#endif
