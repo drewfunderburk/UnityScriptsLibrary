@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Destroys gameObject after a specified delay
 /// </summary>
-public class DestroySelfBehaviour : MonoBehaviour
+public class DestroySelf : MonoBehaviour
 {
     [Tooltip("Delay in seconds after which to destroy this object")]
     [SerializeField] private float _delay = 1f;

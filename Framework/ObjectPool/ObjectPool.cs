@@ -14,7 +14,7 @@ public class ObjectPool
     [SerializeField] private GameObject _object;
 
     [Tooltip("Size of the pool")]
-    [SerializeField] [Min(0)] private int _size = 0;
+    [SerializeField, Min(0)] private int _size = 0;
 
     private Queue<GameObject> _objectQueue = new Queue<GameObject>();
     private bool _initialized = false;
@@ -28,7 +28,7 @@ public class ObjectPool
     /// Create a new ObjectPool with the given size and object
     /// </summary>
     /// <param name="obj">Object to pool</param>
-    /// <param name="size">Size of pool</param>
+    /// <param name="size">Size of the pool</param>
     public ObjectPool(GameObject obj, int size)
     {
         // Ensure obj is valid
@@ -46,6 +46,10 @@ public class ObjectPool
         Initialize();
     }
 
+    /// <summary>
+    /// Get the next object in the pool. If the object implements IPoolable, this will return null if the object is not ready to be used.
+    /// </summary>
+    /// <returns></returns>
     public GameObject GetNext()
     {
         if (!_initialized)
@@ -58,13 +62,26 @@ public class ObjectPool
         if (ObjectQueue.Count == 0)
             return null;
 
-        // Put obj in the back of the queue
-        GameObject obj = ObjectQueue.Dequeue();
-        ObjectQueue.Enqueue(obj);
+        // Peek ObjectQueue
+        GameObject obj = ObjectQueue.Peek();
 
-        // Return obj
-        if (!obj.activeInHierarchy)
-            obj.SetActive(true);
+        // If obj is IPoolable, check if ready for use
+        if (obj.TryGetComponent(out IPoolable poolable))
+        {
+            if (poolable.ReadyForPoolToUse)
+                poolable.ReadyForPoolToUse = false;
+            else
+                return null;
+        }
+        else
+            Debug.LogWarning("ObjectPool object does not implement IPoolable.");
+
+        // Cycle ObjectQueue
+        obj = ObjectQueue.Dequeue();
+        ObjectQueue.Enqueue(obj);
+            
+        // Set obj active
+        obj.SetActive(true);
 
         return obj;
     }
@@ -92,6 +109,10 @@ public class ObjectPool
         if (ObjectQueue == null)
             ObjectQueue = new Queue<GameObject>();
 
+        // Ensure queue is cleared before instantiating
+        Clear();
+
+        // Pre-Instantiate all objects
         for (int i = 0; i < _size; i++)
         {
             GameObject obj = Object.Instantiate(_object);

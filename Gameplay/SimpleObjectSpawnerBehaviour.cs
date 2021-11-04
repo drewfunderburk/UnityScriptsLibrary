@@ -12,7 +12,7 @@ public class SimpleObjectSpawnerBehaviour : MonoBehaviour
     [Tooltip("Should objects be spawned on cooldown?")]
     [SerializeField] private bool _spawnContinuously = false;
 
-    private float _nextFireTime;
+    private float _nextSpawnTime;
 
     private void Update()
     {
@@ -22,10 +22,10 @@ public class SimpleObjectSpawnerBehaviour : MonoBehaviour
 
     public void Spawn()
     {
-        if (Time.time < _nextFireTime)
+        if (Time.time < _nextSpawnTime)
             return;
 
-        _nextFireTime = Time.time + (1 / _spawnRate);
+        _nextSpawnTime = Time.time + (1 / _spawnRate);
 
         Instantiate(_object);
     }
