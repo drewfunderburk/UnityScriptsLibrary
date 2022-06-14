@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 41cc83a051005304fbe8a38fcc5b71d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8d63371ee8eb1234a8e20e247d5c2edc, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1686773416956278784}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67e0d1f21fbb104480ffaeb647f509a, type: 3}
+  m_Script: {fileID: 11500000, guid: f519c227561a6a541a19207d52592bd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ProgressTime: 1
@@ -131,8 +131,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 1
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
+      inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
@@ -150,3 +150,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _isProgressing: 0
+  OnComplete:
+    m_PersistentCalls:
+      m_Calls: []
