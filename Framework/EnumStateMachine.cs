@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// State Machine built from a provided enum
 /// </summary>
-public class StateMachine<T> where T : System.Enum
+public class EnumStateMachine<T> where T : System.Enum
 {
     public class State
     {
@@ -25,12 +25,12 @@ public class StateMachine<T> where T : System.Enum
     /// <summary>
     /// Create a new StateMachine, defaulting CurrentState to the first entry in the enum
     /// </summary>
-    public StateMachine() : this((T)(object)0) { }
+    public EnumStateMachine() : this((T)(object)0) { }
 
     /// <summary>
     /// Create a new StateMachine, defaulting CurrentState to the provided state
     /// </summary>
-    public StateMachine(T startingState)
+    public EnumStateMachine(T startingState)
     {
         // Initialize the state array
         for (int i = 0; i < _states.Length; i++)
