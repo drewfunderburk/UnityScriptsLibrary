@@ -8,18 +8,22 @@ public class UICircleProgressIndicator : MonoBehaviour
 {
     [Tooltip("Total time this indicator takes to complete")]
     public float ProgressTime = 1.0f;
+
     [Tooltip("Speed of the progress bar at a given time")]
     public AnimationCurve ProgressCurve = AnimationCurve.Linear(0, 0, 1, 1);
-    [Tooltip("Is this indicator actively progressing?")]
-    [SerializeField] private bool _isProgressing = false;
+
+    [Space]
+    [Tooltip("Invoked when progress is started")]
+    public UnityEvent OnPlay;
+    [Tooltip("Invoked when progress is stopped")]
+    public UnityEvent OnStop;
+    [Tooltip("Invoked when progress is complete")]
+    public UnityEvent OnComplete;
 
     private Image _image;
     private float _timer = 0.0f;
-
-    /// <summary>
-    /// Whether or not this indicator actively progressing
-    /// </summary>
-    public bool IsProgressing { get => _isProgressing; set => _isProgressing = value; } // Needs to be a property to work with UnityEvents
+    private bool _isStarted = false;
+    private bool _isComplete = false;
 
     /// <summary>
     /// Current progress from 0 - 1
@@ -33,11 +37,39 @@ public class UICircleProgressIndicator : MonoBehaviour
 
     private void Update()
     {
-        if (IsProgressing)
+        // Increase or decrease progress
+        if (_isStarted)
+        {
             _timer = Mathf.Clamp(_timer + Time.deltaTime, 0, ProgressTime);
-        else if (!IsProgressing)
+            if (_timer == ProgressTime && !_isComplete)
+            {
+                _isComplete = true;
+                OnComplete.Invoke();
+            }
+        }
+        else if (!_isStarted)
             _timer = Mathf.Clamp(_timer - Time.deltaTime, 0, ProgressTime);
 
+        // Update image fill amount
         _image.fillAmount = ProgressCurve.Evaluate(_timer / ProgressTime);
+    }
+
+    public void Play()
+    {
+        if (!_isStarted)
+        {
+            _isStarted = true;
+            OnPlay.Invoke();
+        }
+    }
+
+    public void Rewind()
+    {
+        if (_isStarted)
+        {
+            _isStarted = false;
+            _isComplete = false;
+            OnStop.Invoke();
+        }
     }
 }
