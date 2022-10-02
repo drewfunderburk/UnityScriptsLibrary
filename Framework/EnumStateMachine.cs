@@ -7,12 +7,16 @@ using UnityEngine;
 /// </summary>
 public class EnumStateMachine<T> where T : System.Enum
 {
-    public class State
+    /**
+     * Explicitly casting to and from the given enum type is problematic in a templated class, 
+     * but casting first to object seems to work
+     */
+
+    private class State
     {
         public delegate void TransitionEvent();
         public TransitionEvent OnStateEnter;
         public TransitionEvent OnStateExit;
-
     }
 
     private State[] _states = new State[System.Enum.GetValues(typeof(T)).Length];
@@ -59,7 +63,7 @@ public class EnumStateMachine<T> where T : System.Enum
     }
 
     /// <summary>
-    /// Bind a void function to the given state's OnStateEnter delegate
+    /// Bind a function to the given state's OnStateEnter delegate
     /// </summary>
     public void BindOnStateEnter(T state, State.TransitionEvent function)
     {
@@ -67,11 +71,27 @@ public class EnumStateMachine<T> where T : System.Enum
     }
 
     /// <summary>
-    /// Bind a void function to the given state's OnStateExit delegate
+    /// Unbind a function from the given state's OnStateEnter delegate
+    /// </summary>
+    public void UnbindOnStateEnter(T state, State.TransitionEvent function)
+    {
+        GetState(state).OnStateEnter -= function;
+    }
+
+    /// <summary>
+    /// Bind a function to the given state's OnStateExit delegate
     /// </summary>
     public void BindOnStateExit(T state, State.TransitionEvent function)
     {
         GetState(state).OnStateExit += function;
+    }
+
+    /// <summary>
+    /// Unbind a function from the given state's OnStateExit delegate
+    /// </summary>
+    public void UnbindOnStateExit(T state, State.TransitionEvent function)
+    {
+        GetState(state).OnStateExit -= function;
     }
 
     /// <summary>
