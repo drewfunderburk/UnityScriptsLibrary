@@ -43,6 +43,9 @@ public class CameraShake : MonoBehaviour
     [Tooltip("Should trauma decay at all")]
     [SerializeField] private bool _traumaShouldDecay = true;
 
+    [Tooltip("Multiplier for trauma decay speed")]
+    [SerializeField] private float _traumaDecaySpeedMultiplier = 1.0f;
+
     [Tooltip("How quickly should trauma decay from a certain value")]
     [SerializeField] private AnimationCurve _traumaDecayCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
@@ -74,6 +77,11 @@ public class CameraShake : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.E))
+            AddTrauma(0.3f);
+        else if (Input.GetKeyDown(KeyCode.R))
+            AddTrauma(0.6f);
+
         // No need to process if there is no trauma
         if (Trauma <= 0)
             return;
@@ -109,7 +117,7 @@ public class CameraShake : MonoBehaviour
 
         // Trauma decay
         if (TraumaShouldDecay)
-            Trauma = Mathf.Max(0, Trauma - _traumaDecayCurve.Evaluate(Trauma) * Time.deltaTime);
+            Trauma = Mathf.Max(0, Trauma - _traumaDecayCurve.Evaluate(Trauma) * _traumaDecaySpeedMultiplier * Time.deltaTime);
     }
 
     private Vector3 SampleNoise()
